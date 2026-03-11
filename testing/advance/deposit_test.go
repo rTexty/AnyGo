@@ -35,21 +35,21 @@ func TestWallerService_Deposti(t *testing.T) {
 			expErr:  "db error: timeout",   // Deposit должен обернуть ошибку и вернуть её нам
 		},
 	}
-    for _, tt := range cases{
-        t.Run(tt.name, func(t *testing.T) {
-            mockRepo := &MockWalletRepo{
-                func(userId int, amount float64) error {
-                    return tt.mockErr
-                },
-            }
-            service := NewWalletService(mockRepo)
-            err := service.Deposit(tt.req)
-             if tt.expErr != "" {
-                 require.Error(t, err)
-                 require.EqualError(t, err, tt.expErr)
-             } else {
-                 require.NoError(t, err)
-             }
-        })
-    }
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			mockRepo := &MockWalletRepo{
+				func(userId int, amount float64) error {
+					return tt.mockErr
+				},
+			}
+			service := NewWalletService(mockRepo)
+			err := service.Deposit(tt.req)
+			if tt.expErr != "" {
+				require.Error(t, err)
+				require.EqualError(t, err, tt.expErr)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }
