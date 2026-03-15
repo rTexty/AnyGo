@@ -35,7 +35,7 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	rev := flag.Bool("r", false, "reverse flag")
 	numeric := flag.Bool("n", false, "Numeric flag")
-
+	uniq := flag.Bool("u", false, "Unique strings flag")
 	flag.Parse()
 	var strs []string
 	for scanner.Scan() {
@@ -55,12 +55,23 @@ func main() {
 			}
 			return numI < numJ
 		}
-        if *rev {
-            return strs[i] > strs[j]
-        }
+		if *rev {
+			return strs[i] > strs[j]
+		}
 		return strs[i] < strs[j]
 	})
-	for idx, str := range strs {
-		fmt.Printf("Id: %d, String: %s\n", idx, str)
-	}
+	if *uniq {
+        var prevStr string
+        for idx, str := range strs {
+            if idx == 0 || str != prevStr {
+                fmt.Println(str)
+                prevStr = str
+            }
+        }
+    } else {
+        for _, str := range strs {
+            fmt.Println(str)
+        }
+    }
+
 }
