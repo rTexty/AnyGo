@@ -2,9 +2,10 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
-	"strings"
+	"sort"
 )
 
 //Утилита sort
@@ -29,22 +30,22 @@ import (
 //
 //   Код должен проходить все тесты, а также проверки go vet и golint (понимание, что требуются надлежащие комментарии, имена и структура программы).
 
-
 func main() {
-    reader := bufio.NewReader(os.Stdin)
-    var strs []string
-    fmt.Println("Enter text: ")
-    end := ""
-    for {
-        line, err := reader.ReadString('\n')
-        if err != nil {
-            fmt.Println("Error", err)
-            break
+	scanner := bufio.NewScanner(os.Stdin)
+    rev := flag.Bool("r", false, "reverse flag")
+    flag.Parse()
+	var strs []string
+	for scanner.Scan() {
+		line := scanner.Text()
+		strs = append(strs, line)
+	}
+	if scanner.Err() != nil {
+		fmt.Println("Error: ", scanner.Err().Error())
+	}
+    sort.SliceStable(strs, func(i, j int) bool {
+        if *rev {
+            if strs[i] < strs[j] { return false }
         }
-        end = strings.TrimRight(line, "\r\n")
-        if end == ""{
-            break
-        }
-        strs = append(strs, end)
-    }
+        return strs[i] < strs[j]
+    })
 }
