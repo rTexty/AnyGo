@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 )
 
 //Утилита sort
@@ -23,7 +24,7 @@ import (
 //   -M — сортировать по названию месяца (Jan, Feb, ... Dec), т.е. распознавать специфический формат дат.
 //   -b — игнорировать хвостовые пробелы (trailing blanks).
 //   -c — проверить, отсортированы ли данные; если нет, вывести сообщение об этом.
-//   -h — сортировать по числовому значению с учётом суффиксов (например, К = килобайт, М = мегабайт — человекочитаемые размеры).
+//   -h — сортировать по числовому значению с учётом суффиксов (например, К = килобайт, М = мегабайт — человеко читаемые размеры).
 //   Программа должна корректно обрабатывать комбинации флагов (например, -nr — числовая сортировка в обратном порядке, и т.д.).
 
 //   Необходимо предусмотреть эффективную обработку больших файлов.
@@ -32,8 +33,10 @@ import (
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-    rev := flag.Bool("r", false, "reverse flag")
-    flag.Parse()
+	rev := flag.Bool("r", false, "reverse flag")
+	numeric := flag.Bool("n", false, "Numeric flag")
+
+	flag.Parse()
 	var strs []string
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -42,10 +45,22 @@ func main() {
 	if scanner.Err() != nil {
 		fmt.Println("Error: ", scanner.Err().Error())
 	}
-    sort.SliceStable(strs, func(i, j int) bool {
+	sort.SliceStable(strs, func(i, j int) bool {
+
+		if *numeric {
+			numI, _ := strconv.Atoi(strs[i])
+			numJ, _ := strconv.Atoi(strs[j])
+			if *rev {
+				return numI > numJ
+			}
+			return numI < numJ
+		}
         if *rev {
-            if strs[i] < strs[j] { return false }
+            return strs[i] > strs[j]
         }
-        return strs[i] < strs[j]
-    })
+		return strs[i] < strs[j]
+	})
+	for idx, str := range strs {
+		fmt.Printf("Id: %d, String: %s\n", idx, str)
+	}
 }
