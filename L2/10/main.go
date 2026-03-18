@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 //Утилита sort
@@ -31,11 +32,20 @@ import (
 //
 //   Код должен проходить все тесты, а также проверки go vet и golint (понимание, что требуются надлежащие комментарии, имена и структура программы).
 
+func getColumnValue(line string, k int) string {
+	columns := strings.Split(line, "\t")
+	if k < 1 || k > len(columns) {
+		return ""
+	}
+	return columns[k-1]
+}
+
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	rev := flag.Bool("r", false, "reverse flag")
 	numeric := flag.Bool("n", false, "Numeric flag")
 	uniq := flag.Bool("u", false, "Unique strings flag")
+	column := flag.Int("k", 0, "Sort by column number (1-indexed, tab-separated)")
 	flag.Parse()
 	var strs []string
 	for scanner.Scan() {
@@ -46,19 +56,28 @@ func main() {
 		fmt.Println("Error: ", scanner.Err().Error())
 	}
 	sort.SliceStable(strs, func(i, j int) bool {
+		var compareI, compareJ string
+
+		if *column > 0 {
+			compareI = getColumnValue(strs[i], *column)
+			compareJ = getColumnValue(strs[j], *column)
+		} else {
+			compareI = strs[i]
+			compareJ = strs[j]
+		}
 
 		if *numeric {
-			numI, _ := strconv.Atoi(strs[i])
-			numJ, _ := strconv.Atoi(strs[j])
+			numI, _ := strconv.Atoi(compareI)
+			numJ, _ := strconv.Atoi(compareJ)
 			if *rev {
 				return numI > numJ
 			}
 			return numI < numJ
 		}
 		if *rev {
-			return strs[i] > strs[j]
+			return compareI > compareJ
 		}
-		return strs[i] < strs[j]
+		return compareI < compareJ
 	})
 	if *uniq {
         var prevStr string
