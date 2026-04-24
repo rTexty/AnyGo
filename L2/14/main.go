@@ -12,12 +12,12 @@ func or(channels ...<-chan interface{}) <-chan interface{} {
 
 	out := make(chan interface{})
 	var once sync.Once
-	
+
 	for _, ch := range channels{
 		go func(ch <-chan interface{}) {
 			select
-		} () 
+		} ()
 	}
-	
+
 	return out
 }
